@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Life in Weeks — your whole life as a grid</title>
+    <meta
+      name="description"
+      content="See your whole life as a grid of weeks — one row per year, one box per week. Add milestones, pick a theme, export a printable poster. No backend, nothing leaves your device."
+    />
+    <script type="module" crossorigin src="./assets/index-233OCIwV.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-T6AAUTD-.css">
+  </head>
+  <body>
+    <main class="stage">
+      <div class="poster-wrap" id="poster-wrap">
+        <div class="poster" id="poster"></div>
+      </div>
+      <div class="legend" id="legend" aria-label="Legend"></div>
+    </main>
+
+    <aside class="panel" id="panel">
+      <header class="panel-head">
+        <h1>Life in Weeks</h1>
+        <button type="button" id="toggle-panel" class="ghost" aria-label="Hide controls">×</button>
+      </header>
+
+      <p class="lede">
+        Each box is one week of your life. One row per year, 52 weeks across. Weeks already lived
+        are filled; this week glows.
+      </p>
+
+      <label class="row">
+        <span>Birthdate</span>
+        <input type="date" id="birth" autocomplete="off" />
+      </label>
+
+      <label class="row">
+        <span>Life expectancy <output id="expectancy-out"></output></span>
+        <input type="range" id="expectancy" min="60" max="100" step="1" />
+      </label>
+
+      <label class="row">
+        <span>Theme</span>
+        <select id="theme"></select>
+      </label>
+
+      <div class="stats" id="stats" aria-live="polite"></div>
+
+      <section class="milestones">
+        <div class="milestones-head">
+          <span>Milestones</span>
+          <button type="button" id="add-milestone" class="mini">+ Add</button>
+        </div>
+        <div id="milestone-list" class="milestone-list"></div>
+      </section>
+
+      <div class="buttons">
+        <button type="button" id="png">⬇ PNG</button>
+        <button type="button" id="svg">⬇ SVG</button>
+      </div>
+      <div class="buttons">
+        <button type="button" id="print">🖨 Print</button>
+        <button type="button" id="share" class="primary">🔗 Copy link</button>
+      </div>
+
+      <footer class="self-ref">
+        <a
+          id="source"
+          href="https://github.com/baditaflorin/life-in-weeks"
+          target="_blank"
+          rel="noopener"
+          >source</a
+        >
+        ·
+        <a href="https://www.paypal.com/paypalme/florinbadita" target="_blank" rel="noopener"
+          >tip ♥</a
+        >
+        · <span id="version">vdev</span>
+        <br />
+        <span class="privacy">Private — everything stays in your browser & the share link.</span>
+      </footer>
+    </aside>
+
+    <button type="button" id="show-panel" class="show-panel" aria-label="Show controls">⚙</button>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <!-- Template for one milestone editor row. -->
+    <template id="milestone-tpl">
+      <div class="milestone-item">
+        <input type="color" class="m-color" aria-label="Milestone color" />
+        <input type="date" class="m-date" aria-label="Milestone date" />
+        <input
+          type="text"
+          class="m-label"
+          maxlength="48"
+          placeholder="Label"
+          aria-label="Milestone label"
+        />
+        <button type="button" class="m-remove ghost" aria-label="Remove milestone">×</button>
+      </div>
+    </template>
+
+  </body>
+</html>
