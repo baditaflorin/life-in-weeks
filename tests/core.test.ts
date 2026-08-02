@@ -161,6 +161,31 @@ describe("encodeState / decodeState", () => {
     expect(d.milestones.length).toBeGreaterThanOrEqual(1);
     expect(d.milestones.some((m) => m.label === "ok")).toBe(true);
   });
+
+  it("round-trips a milestone label containing a literal tilde", () => {
+    // `~` is the field separator for a packed milestone, but `encodeURIComponent`
+    // leaves `~` unescaped (it's RFC 3986 "unreserved"), so a label like this
+    // used to smuggle in extra separators and get silently dropped on decode.
+    const s: State = {
+      ...DEFAULTS,
+      birth: "1990-01-01",
+      milestones: [{ date: "2000-01-01", label: "Won ~1000 dollars", color: "#e63946" }],
+    };
+    const decoded = decodeState("#" + encodeState(s));
+    expect(decoded.milestones).toHaveLength(1);
+    expect(decoded.milestones[0]).toEqual(s.milestones[0]);
+  });
+
+  it("round-trips a label with multiple tildes and one at each edge", () => {
+    const s: State = {
+      ...DEFAULTS,
+      birth: "1990-01-01",
+      milestones: [{ date: "2000-01-01", label: "~a~b~c~", color: "#118ab2" }],
+    };
+    const decoded = decodeState("#" + encodeState(s));
+    expect(decoded.milestones).toHaveLength(1);
+    expect(decoded.milestones[0]?.label).toBe("~a~b~c~");
+  });
 });
 
 describe("themes", () => {

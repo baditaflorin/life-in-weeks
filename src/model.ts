@@ -117,23 +117,33 @@ export function cellOf(index: number): { row: number; col: number } {
 }
 
 // ---- URL-hash (de)serialization ------------------------------------------
-// Milestones are packed as `date~label~color` tuples joined by `;`, with the
-// label percent-escaped so separators inside a label survive a round-trip.
+// Milestones are packed as `date~label~color` tuples joined by `;`. The label
+// is percent-encoded, but `encodeURIComponent` intentionally leaves `~`
+// unescaped (it's an RFC 3986 "unreserved" character) — so a label typed
+// with a literal `~` (e.g. "Won ~1000 dollars") would otherwise smuggle in
+// extra separators and corrupt the split. `date` (fixed ISO `YYYY-MM-DD`)
+// and `color` (hex, optionally `#`-prefixed) never contain `~`, so instead
+// of splitting on every `~`, we only ever look at the *first* one (end of
+// date) and the *last* one (start of color) and treat everything between as
+// the still-percent-encoded label, tildes and all.
 
 function encodeMilestone(m: Milestone): string {
   return [m.date, encodeURIComponent(m.label), m.color.replace(/^#/, "")].join("~");
 }
 
 function decodeMilestone(raw: string): Milestone | null {
-  const parts = raw.split("~");
-  if (parts.length < 3) return null;
-  const [date, label, color] = parts;
+  const first = raw.indexOf("~");
+  const last = raw.lastIndexOf("~");
+  if (first < 0 || first === last) return null;
+  const date = raw.slice(0, first);
+  const label = raw.slice(first + 1, last);
+  const color = raw.slice(last + 1);
   if (!date || !parseISODate(date)) return null;
-  const hex = `#${(color ?? "").replace(/^#/, "")}`;
+  const hex = `#${color.replace(/^#/, "")}`;
   if (!/^#[0-9a-fA-F]{3,8}$/.test(hex)) return null;
   return {
     date,
-    label: safeDecode(label ?? ""),
+    label: safeDecode(label),
     color: hex,
   };
 }
